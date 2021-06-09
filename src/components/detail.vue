@@ -1,6 +1,6 @@
 <template>
   <div class="hello">
-    <router-link to="/user">Quay lại</router-link>
+    <router-link to="/user">Quay lại(dùng filter)</router-link>
     <p>Họ Tên : {{ data.fullname | showInfo }}</p>
     <p>Ngày Sinh(vue moment) : {{ data.birthday | moment("dddd, MMMM Do YYYY") }}</p>
     <p>Email : {{ data.email | showInfo }}</p>

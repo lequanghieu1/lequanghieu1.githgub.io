@@ -1,10 +1,9 @@
-this page use router,scss,axios
 
 <template>
   <div>
     <div class="top"></div>
     <div class="main">
-      Form đăng nhập (vuelidate)
+      Form đăng nhập (vuelidate),two way binding
       <div class="form-group">
         <input
           type="text"
@@ -14,12 +13,19 @@ this page use router,scss,axios
         />
 
         <div class="validate">
-          <div class="error" v-if="!$v.name.required">
-            {{ delay === false ? "username is required" : "" }}
+          <div
+            class="error"
+            v-if="!$v.name.required && !this.$store.state.vali.delay"
+          >
+            username is required(async validate)
           </div>
-          <div class="error" v-if="!$v.name.minLength">
+          <smallss class="small" v-if="this.$store.state.vali.delay"/>
+          <div
+            class="error"
+            v-if="!$v.name.minLength && !this.$store.state.vali.delay"
+          >
             username must have at least
-            {{ $v.name.$params.minLength.min }} letters.
+            {{ $v.name.$params.minLength.min }} letters.(async validate)
           </div>
         </div>
       </div>
@@ -51,10 +57,10 @@ this page use router,scss,axios
 
 <script>
 import spinner from "./spinner";
+import smallss from "./spinsmall.vue";
 import { required, minLength } from "vuelidate/lib/validators";
-let delay = false;
 export default {
-  components: { spinner },
+  components: { spinner, smallss },
   data() {
     return {
       name: "",
@@ -69,16 +75,6 @@ export default {
     pass: {
       required,
       minLength: minLength(3),
-    },
-  },
-  computed: {
-    delay() {
-      return delay;
-    },
-  },
-  watch: {
-    name: () => {
-      this.delayTouch();
     },
   },
   methods: {
@@ -96,19 +92,10 @@ export default {
 
     delayTouch() {
       var promise = new Promise((resolve) => {
-        resolve(delay);
+        resolve();
       });
       promise.then(() => {
-        delay = true;
-        console.log(delay);
-        this.delay;
-        setTimeout(() => {
-          delay = false;
-        }, 500);
-        setTimeout(() => {
-          this.delay;
-          console.log(delay);
-        }, 1000);
+        this.$store.dispatch("startVali");
       });
     },
   },

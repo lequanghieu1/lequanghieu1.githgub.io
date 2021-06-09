@@ -63,6 +63,12 @@
   .spinner{
     z-index: 10;
   }
+.loading{
+   display: flex;
+   justify-content: center;
+   align-items: center;
+ }
+
  
   .error{
     color: red;
@@ -76,4 +82,9 @@
   .route{
     display: flex;
     justify-content: space-between;
+  }
+  .small{
+    position: absolute;
+    margin-right: 300px;
+    margin-top:-6px;
   }

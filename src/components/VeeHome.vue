@@ -5,7 +5,7 @@
       Form đăng nhập (vee_validate)
       <ValidationProvider name="email" rules="required|email">
         <div slot-scope="{ errors }">
-          <input v-model="name" placeholder="Email" />
+          <input v-model="name" placeholder="Email" @input="delayTouch()" />
           <div class="validate">
             <p class="error">{{ errors[0] }}</p>
           </div>
@@ -47,6 +47,14 @@ export default {
           this.$router.push("/user");
         }, 1000);
       }
+    },
+    delayTouch() {
+      var promise = new Promise((resolve) => {
+        resolve();
+      });
+      promise.then(() => {
+        this.$store.dispatch("startVali");
+      });
     },
   },
   data() {

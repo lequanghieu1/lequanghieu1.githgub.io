@@ -31,8 +31,7 @@ const getters = {
 const actions = {
     async loadUsers({ commit }) {
         await HTTP.get(`users`)
-            .then((res) => res.data)
-            .then(users => { commit('SET_MANAGERS', users) });
+            .then((res) => { commit('SET_MANAGERS', res.data) });
     },
     usernameLogin({ commit }, data) {
         commit('LOGIN_USERNAME', data)
@@ -44,6 +43,7 @@ const actions = {
 const mutations = {
     SET_MANAGERS(state, users) {
         state.users = users
+        state.is_login = false
     },
     LOADING(state, status) {
         state.users = status
