@@ -1,11 +1,16 @@
 <template>
-  <div class="hello">
-    <router-link to="/user">Quay lại(dùng filter)</router-link>
-    <p>Họ Tên : {{ data.fullname | showInfo }}</p>
-    <p>Ngày Sinh(vue moment) : {{ data.birthday | moment("dddd, MMMM Do YYYY") }}</p>
-    <p>Email : {{ data.email | showInfo }}</p>
-    <p>Quyền : {{ data.role | showInfo }}</p>
-  </div>
+  <v-card width="500" class="mx-auto mt-9">
+    <v-card-title v-highlight="'red'">Router con(filter) </v-card-title>
+    <v-card-text>
+      <p>Họ Tên : {{ data.fullname | showInfo }}</p>
+      <p>
+        Ngày Sinh(vue moment) :
+        {{ data.birthday | moment("dddd, MMMM Do YYYY") }}
+      </p>
+      <p>Email : {{ data.email | showInfo }}</p>
+      <p>Quyền : {{ data.role | showInfo }}</p>
+    </v-card-text>
+  </v-card>
 </template>
 
 <script>

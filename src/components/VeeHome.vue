@@ -1,40 +1,82 @@
 <template>
-  <div>
-    <div class="top vee"></div>
-    <div class="main">
-      Form đăng nhập (vee_validate)
-      <ValidationProvider name="email" rules="required|email">
-        <div slot-scope="{ errors }">
-          <input v-model="name" placeholder="Email" @input="delayTouch()" />
-          <div class="validate">
-            <p class="error">{{ errors[0] }}</p>
-          </div>
-        </div>
-      </ValidationProvider>
-      <ValidationProvider name="pass" rules="required">
-        <div slot-scope="{ errors }">
-          <input v-model="pass" placeholder="Mật Khẩu" type="password" />
-          <div class="validate">
-            <p class="error">{{ errors[0] }}</p>
-          </div>
-        </div>
-      </ValidationProvider>
-      <spinner class="spinner" v-if="this.$store.state.users.is_login" />
-      <button
-        class="submit vee"
-        @click="submit()"
-        v-if="!this.$store.state.users.is_login"
-      >
-        Đăng Nhập
-      </button>
-    </div>
-    <div class="bot vee"></div>
-  </div>
+  <v-app>
+    <v-content>
+      <div class="top vee"></div>
+      <div class="main">
+        <v-content>
+          <v-card width="500" class="mx-auto mt-9">
+            <v-card-title>Form đăng nhập (vee_validate)</v-card-title>
+            <v-card-text>
+              <validation-observer ref="observer">
+                <form @submit.prevent="submit">
+                  <validation-provider
+                    v-slot="{ errors }"
+                    name="email"
+                    rules="required|email"
+                    data-vv-delay="1000"
+                  >
+                    <v-text-field
+                      v-model="name"
+                      :error-messages="errors"
+                      label="Email"
+                      required
+                    ></v-text-field>
+                  </validation-provider>
+                  <validation-provider
+                    v-slot="{ errors }"
+                    name="pass"
+                    rules="required|min:3"
+                  >
+                    <v-text-field
+                      data-vv-delay="1000"
+                      v-model="pass"
+                      :error-messages="errors"
+                      label="password"
+                      required
+                    ></v-text-field>
+                  </validation-provider>
+                </form>
+              </validation-observer>
+            </v-card-text>
+            <v-card-actions>
+              <v-btn color="success">Register</v-btn>
+              <v-btn color="info" @click="submit">Login</v-btn>
+            </v-card-actions>
+          </v-card>
+        </v-content>
+        <spinner v-if="this.$store.state.users.is_login" />
+      </div>
+      <div class="bot vee"></div>
+    </v-content>
+  </v-app>
 </template>
 
 <script>
 import spinner from "./spinner";
-import { ValidationProvider } from "vee-validate";
+import { required, email, min } from "vee-validate/dist/rules";
+import {
+  extend,
+  ValidationObserver,
+  ValidationProvider,
+  setInteractionMode,
+} from "vee-validate";
+setInteractionMode("eager");
+
+extend("required", {
+  ...required,
+  message: "{_field_} can not be empty",
+});
+
+extend("min", {
+  ...min,
+  message: "{_field_} may not be little than {length} characters",
+});
+
+extend("email", {
+  ...email,
+  message: "Email must be valid",
+});
+
 export default {
   methods: {
     submit() {
@@ -48,14 +90,6 @@ export default {
         }, 1000);
       }
     },
-    delayTouch() {
-      var promise = new Promise((resolve) => {
-        resolve();
-      });
-      promise.then(() => {
-        this.$store.dispatch("startVali");
-      });
-    },
   },
   data() {
     return {
@@ -65,6 +99,7 @@ export default {
   },
   components: {
     ValidationProvider,
+    ValidationObserver,
     spinner,
   },
 };

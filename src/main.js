@@ -21,7 +21,7 @@ Vue.use(VueMoment, {
   moment,
 })
 Vue.directive('highlight', {
-  bind(el,binding) {
+  bind(el, binding) {
     el.style.color = binding.value
   }
 });

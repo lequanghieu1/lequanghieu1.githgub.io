@@ -1,49 +1,70 @@
 <template>
-  <div>
-    <div class="top vuetify"></div>
-    <div class="main">
-      Form đăng nhập (vuetify_validate)
-      <v-form ref="form" v-model="valid" lazy-validation>
-        <v-text-field
-          v-model="name"
-          :counter="4"
-          :rules="nameRules"
-          label="Username"
-          required
-        ></v-text-field>
-
-        <v-text-field
-          v-model="pass"
-          type="password"
-          :rules="passRules"
-          label="Password"
-          required
-        ></v-text-field>
-        <b-button
-          :disabled="!valid"
-          variant="success"
-          class="mr-4 vuetify"
-          @click="validate"
-          v-if="!this.$store.state.users.is_login"
-        >
-          Đăng nhập
-        </b-button>
-        <spinner class="spinner" v-if="this.$store.state.users.is_login" />
-      </v-form>
-    </div>
-
-    <div class="bot vuetify"></div>
-  </div>
+  <v-app>
+    <v-content>
+      <div class="top vuetify"></div>
+      <div class="main">
+        <v-card width="500" class="mx-auto mt-9">
+          <v-card-title>Login with vuetify</v-card-title>
+          <v-card-text>
+            <form>
+              <v-text-field
+                v-model="name"
+                :error-messages="emailErrors"
+                label="Email"
+                required
+                @input="delayTouch($v.name)"
+                @blur="$v.name.$touch()"
+              ></v-text-field>
+              <v-text-field
+                v-model="pass"
+                :error-messages="passErrors"
+                label="Password"
+                required
+                @input="delayTouch($v.pass)"
+                @blur="$v.pass.$touch()"
+              ></v-text-field>
+            </form>
+          </v-card-text>
+          <v-card-actions>
+            <v-btn color="info" @click="submit">Login</v-btn>
+            <v-btn color="success" @click="vueli">Login with vuelidate</v-btn>
+            <v-btn color="warning" @click="vee">Login with vee</v-btn>
+          </v-card-actions>
+        </v-card>
+        <spinner v-if="this.$store.state.users.is_login" />
+      </div>
+      <div class="bot vuetify"></div>
+    </v-content>
+  </v-app>
 </template>
 
 <script>
 import spinner from "./spinner";
+import { validationMixin } from "vuelidate";
+const mustBeUser = (value) => value.indexOf("user") >= 0;
+const touchMap = new WeakMap();
+import { required, minLength, email } from "vuelidate/lib/validators";
 export default {
   components: { spinner },
+  mixins: [validationMixin],
+  validations: {
+    name: { required, email, mustBeUser },
+    pass: { required, minLength: minLength(3) },
+  },
+
   methods: {
+    delayTouch($v) {
+      console.log($v);
+      $v.$reset();
+      if (touchMap.has($v)) {
+        clearTimeout(touchMap.get($v));
+      }
+      touchMap.set($v, setTimeout($v.$touch, 1000));
+    },
     submit() {
+      this.$v.$touch();
       this.$store.dispatch("usernameLogin", {
-        name: this.name,
+        email: this.name,
         pass: this.pass,
       });
       if (this.$store.state.users.is_login === true) {
@@ -52,27 +73,37 @@ export default {
         }, 1000);
       }
     },
-    validate() {
-      var promise = new Promise((resolve) => {
-        resolve();
-      });
-      promise.then(this.submit());
+    vueli() {
+      this.$router.push("/");
+    },
+    vee() {
+      this.$router.push("/vee");
     },
   },
   data() {
     return {
-      valid: true,
-      nameRules: [
-        (v) => !!v || "Name is required",
-        (v) => (v && v.length >= 4) || "username must be at least 4 characters",
-      ],
-      passRules: [
-        (v) => !!v || "Rules is required",
-        (v) => (v && v.length >= 3) || "password must be at least 3 characters",
-      ],
+      showPassword: false,
       name: "",
       pass: "",
     };
+  },
+  computed: {
+    passErrors() {
+      const errors = [];
+      if (!this.$v.pass.$dirty) return errors;
+      !this.$v.pass.minLength &&
+        errors.push("password must be at least 3 characters long");
+      !this.$v.pass.required && errors.push("password is required.");
+      return errors;
+    },
+    emailErrors() {
+      const errors = [];
+      if (!this.$v.name.$dirty) return errors;
+      !this.$v.name.email && errors.push("Must be valid e-mail");
+      !this.$v.name.required && errors.push("E-mail is required");
+      !this.$v.name.mustBeUser && errors.push("Email missing from user");
+      return errors;
+    },
   },
 };
 </script>

@@ -11,7 +11,7 @@ const state = {
             pass: "123",
             fullname: "Nguyễn Văn A",
             birthday: " 08 03 2001",
-            email: "a@gmail.com",
+            email: "user1@gmail.com",
             role: "Admin",
         },
         {
